@@ -32,9 +32,7 @@ const SignIn: React.FC = () => {
       try {
         formRef.current?.setErrors({});
         const schema = Yup.object().shape({
-          email: Yup.string()
-            .required('Email obrigatório')
-            .email('Digite um email válido'),
+          email: Yup.string().required('Email obrigatório').email('Digite um email válido'),
           password: Yup.string().required('Senha obrigatória'),
         });
         await schema.validate(data, {
@@ -73,15 +71,10 @@ const SignIn: React.FC = () => {
           <Form ref={formRef} onSubmit={hadleSubmit}>
             <h1>Faça seu logon</h1>
             <Input name="email" icon={FiMail} placeholder="Email" />
-            <Input
-              name="password"
-              icon={FiLock}
-              type="password"
-              placeholder="Senha"
-            />
+            <Input name="password" icon={FiLock} type="password" placeholder="Senha" />
 
             <Button type="submit">Entrar</Button>
-            <a href="forgot">Esqueci minha senha</a>
+            <Link to="forgot-password">Esqueci minha senha</Link>
           </Form>
 
           <Link to="/signup">
