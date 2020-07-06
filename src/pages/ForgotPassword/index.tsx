@@ -48,7 +48,7 @@ const Forgot: React.FC = () => {
           description: 'Um email com as instruções de recuperação de senha foi enviado ao email informado',
         });
 
-        history.push('/signin');
+        history.push('/');
       } catch (error) {
         if (error instanceof Yup.ValidationError) {
           const errors = getValidationErrors(error);

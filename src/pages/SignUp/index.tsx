@@ -46,7 +46,7 @@ const SignUp: React.FC = () => {
           title: 'Cadastro realizado',
           description: 'Você já pode fazer seu logon',
         });
-        history.push('/signin');
+        history.push('/');
       } catch (error) {
         if (error instanceof Yup.ValidationError) {
           const errors = getValidationErrors(error);
@@ -80,7 +80,7 @@ const SignUp: React.FC = () => {
             <Button type="submit">Cadastrar</Button>
           </Form>
 
-          <Link to="/signin">
+          <Link to="/">
             <FiArrowLeft />
             Voltar para logon
           </Link>
