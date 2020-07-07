@@ -1,4 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { isToday, format } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
 import DayPicker, { DayModifiers } from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 import { FiPower, FiClock } from 'react-icons/fi';
@@ -25,10 +27,20 @@ interface MonthAvailabilityItem {
   available: boolean;
 }
 
+interface Appointment {
+  id: string;
+  date: string;
+  user: {
+    name: string;
+    avatar_url: string;
+  };
+}
+
 const Dashboard: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedMonth, setSelectedMonth] = useState(new Date());
   const [monthAvailability, setMonthAvailability] = useState<MonthAvailabilityItem[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const { signOut, user } = useAuth();
 
   const handleDateChange = useCallback((day: Date, modifiers: DayModifiers) => {
@@ -54,6 +66,21 @@ const Dashboard: React.FC = () => {
       });
   }, [user.id, selectedMonth]);
 
+  useEffect(() => {
+    api
+      .get(`/appointments/me`, {
+        params: {
+          year: selectedMonth.getFullYear(),
+          month: selectedMonth.getMonth() + 1,
+          day: selectedDate.getDate(),
+        },
+      })
+      .then(response => {
+        console.log(response.data);
+        setAppointments(response.data);
+      });
+  }, [selectedDate, selectedMonth]);
+
   const disabledDays = useMemo(() => {
     const year = selectedMonth.getFullYear();
     const month = selectedMonth.getMonth();
@@ -61,6 +88,22 @@ const Dashboard: React.FC = () => {
       .filter(monthDay => !monthDay.available)
       .map(monthDay => new Date(year, month, monthDay.day));
   }, [monthAvailability, selectedMonth]);
+
+  const selectedDateAsText = useMemo(
+    () =>
+      format(selectedDate, "'Dia' dd 'de' MMMM", {
+        locale: ptBR,
+      }),
+    [selectedDate],
+  );
+
+  const selectedWeekDayAsText = useMemo(
+    () =>
+      format(selectedDate, 'cccc', {
+        locale: ptBR,
+      }),
+    [selectedDate],
+  );
 
   return (
     <Container>
@@ -86,9 +129,9 @@ const Dashboard: React.FC = () => {
         <Schedule>
           <h1>Horários agendados</h1>
           <p>
-            <span>Hoje</span>
-            <span>dia 06</span>
-            <span>segunda-feira</span>
+            {isToday(selectedDate) && <span>Hoje</span>}
+            <span>{selectedDateAsText}</span>
+            <span>{selectedWeekDayAsText}</span>
           </p>
           <NextAppointment>
             <strong>Atendimento a seguir</strong>
